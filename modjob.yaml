@@ -19,13 +19,13 @@ params:
   # -----------------------------------
   # Added by me:
   # -----------------------------------
-  - name: LWIP_TCP_QUEUE_OOSEQ
-    type: int
-    only: [0] #, 1, 2, 3, 4]
+  #!- name: LWIP_TCP_QUEUE_OOSEQ
+  #!  type: int
+  #!  only: [0] #, 1, 2, 3, 4]
 
-  - name: LWIP_SND_BUF
-    type: int
-    only: [1] #, 2, 4]    # are bigger numbers then 2 even worth it?! Recommended are 0xFFFF as max.
+  #!- name: LWIP_SND_BUF
+  #!  type: int
+  #!  only: [1] #, 2, 4]    # are bigger numbers then 2 even worth it?! Recommended are 0xFFFF as max.
   # -----------------------------------
 
   #! - name: LWIP_POOLS_TRY_BIGGER_POOL
@@ -81,7 +81,7 @@ outputs:
 
 runs:
   - name: build
-    image: alexpawe/unikraft
+    image: alexpawe/ukbench-unikraft
     cores: 1
     devices:
       - /dev/urandom
@@ -89,6 +89,8 @@ runs:
       |
       set -ex
       export UK_WORKDIR=/usr/src/unikraft
+      export UK_CACHEDIR=/usr/src/unikraft/.kraftcache
+      export KRAFTRC=/usr/src/unikraft/.kraftrc
       export LC_ALL=C.UTF-8
       export LANG=C.UTF-8
       for env in $(cat /etc/environment); do \
@@ -111,7 +113,7 @@ runs:
         --no  LIB9PFS \
         --no  LIBUK9P
 
-      kraft build
+      kraft build --no-progress
       cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
       if [[ $ACCESS_LOG == "y" ]]; then \
         export ACCESS_LOG="\/dev\/stdout"; \
@@ -129,7 +131,7 @@ runs:
       find -depth -print | tac | bsdcpio -o --format newc > ../initramfs.cpio
 
   - name: run
-    image: alexpawe/unikraft
+    image: alexpawe/ukbench-unikraft
     cores: 30
     devices:
       - /dev/kvm
