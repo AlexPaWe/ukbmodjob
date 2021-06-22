@@ -19,6 +19,10 @@ params:
   # -----------------------------------
   # Added by me:
   # -----------------------------------
+  - name: LIBMIMALLOC_MIMALLOC_DEBUG
+    type: int
+    only: [0, 1, 2]
+
   #!- name: LWIP_TCP_QUEUE_OOSEQ
   #!  type: int
   #!  only: [0] #, 1, 2, 3, 4]
