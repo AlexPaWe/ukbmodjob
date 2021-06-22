@@ -93,8 +93,6 @@ runs:
       |
       set -ex
       export UK_WORKDIR=/usr/src/unikraft
-      export UK_CACHEDIR=/usr/src/unikraft/.kraftcache
-      export KRAFTRC=/usr/src/unikraft/.kraftrc
       export LC_ALL=C.UTF-8
       export LANG=C.UTF-8
       for env in $(cat /etc/environment); do \
@@ -115,7 +113,9 @@ runs:
         --yes LIBINITRAMFS \
         --yes LIBCPIO \
         --no  LIB9PFS \
-        --no  LIBUK9P
+        --no  LIBUK9P \
+        # added by me:
+        --set LIBMIMALLOC_MIMALLOC_DEBUG=$LIBMIMALLOC_MIMALLOC_DEBUG
 
       kraft build --no-progress
       cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
