@@ -21,7 +21,7 @@ params:
   # -----------------------------------
   - name: LIBMIMALLOC_MIMALLOC_DEBUG
     type: int
-    only: [0, 1, 2]
+    only: [0] #, 1, 2]
 
   #!- name: LWIP_TCP_QUEUE_OOSEQ
   #!  type: int
@@ -114,10 +114,9 @@ runs:
         --yes LIBCPIO \
         --no  LIB9PFS \
         --no  LIBUK9P \
-        # added by me:
-        --set LIBMIMALLOC_MIMALLOC_DEBUG=$LIBMIMALLOC_MIMALLOC_DEBUG
+        --set LIBMIMALLOC_MIMALLOC_DEBUG=$LIBMIMALLOC_MIMALLOC_DEBUG # added by me
 
-      kraft build --no-progress
+      kraft build
       cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
       if [[ $ACCESS_LOG == "y" ]]; then \
         export ACCESS_LOG="\/dev\/stdout"; \
