@@ -118,7 +118,7 @@ runs:
         --yes LIBCPIO \
         --no  LIB9PFS \
         --no  LIBUK9P \
-        --set LIBMIMALLOC_MIMALLOC_DEBUG=$LIBMIMALLOC_MIMALLOC_DEBUG \ # added by me
+        --set LIBMIMALLOC_MIMALLOC_DEBUG=$LIBMIMALLOC_MIMALLOC_DEBUG \
         --set LIBMIMALLOC_ASSERT=$LIBMIMALLOC_ASSERT # added by me
 
       kraft build
