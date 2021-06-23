@@ -28,6 +28,11 @@ params:
     type: string
     only: ["tinyalloc"] #, "bbudy" "regalloc", "tinyalloc", "tlsf", "none"] # tlsf depends on LIBTLSF_INCLUDED
 
+  # Tinyalloc options:
+  - name: LIBTINYALLOC_DISABLE_SPLIT
+    type: bool
+    only: ["y"] #, n] # default n
+    
   # Mimalloc options: (Mimalloc does not work yet!)
   # - name: LIBMIMALLOC_MIMALLOC_DEBUG
   #   type: int
@@ -145,6 +150,7 @@ runs:
         --set LWIP_UKNETDEV_POLLONLY=$LWIP_UKNETDEV_POLLONLY \
         --set LWIP_POOLS=$LWIP_POOLS \
         $SET_ALLCOCATOR \
+        --set LIBTINYALLOC_DISABLE_SPLIT=$LIBTINYALLOC_DISABLE_SPLIT \
         --set LWIP_TCP_QUEUE_OOSEQ=$LWIP_TCP_QUEUE_OOSEQ \
         --set LWIP_SND_BUF=$LWIP_SND_BUF \
         --set LIBTLSF_TLSF_LOG2_SLI=$LIBTLSF_TLSF_LOG2_SLI \
