@@ -30,7 +30,7 @@ params:
 
   # Tinyalloc options:
   - name: LIBTINYALLOC_DISABLE_SPLIT
-    type: bool
+    type: string
     only: ["y"] #, n] # default n
     
   # Mimalloc options: (Mimalloc does not work yet!)
