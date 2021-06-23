@@ -23,7 +23,12 @@ params:
   # Allocator options:
   # -----------------------------------
 
-  # Mimalloc options:
+  # Chose allocator:
+  - name: LIBUKBOOT_INITALLOC
+    type: string
+    only: ["Binary buddy allocator"] #, "Region allocator", "tinyalloc", "TLSF", "None"]
+
+  # Mimalloc options: (Mimalloc does not work yet!)
   # - name: LIBMIMALLOC_MIMALLOC_DEBUG
   #   type: int
   #   only: [0] #, 1, 2]
@@ -126,6 +131,7 @@ runs:
         --set LWIP_NUM_TCPLISTENERS=$LWIP_NUM_TCPLISTENERS \
         --set LWIP_UKNETDEV_POLLONLY=$LWIP_UKNETDEV_POLLONLY \
         --set LWIP_POOLS=$LWIP_POOLS \
+        --set LIBUKBOOT_INITALLOC=$LIBUKBOOT_INITALLOC \
         --set LIBTLSF_TLSF_LOG2_SLI=$LIBTLSF_TLSF_LOG2_SLI \
         --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
         --yes LIBVFSCORE_ROOTFS_RAMFS \
