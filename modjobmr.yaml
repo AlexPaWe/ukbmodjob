@@ -48,9 +48,9 @@ params:
     type: int
     only: [0] #, 1, 2, 3, 4]
 
-  #!- name: LWIP_SND_BUF
-  #!  type: int
-  #!  only: [1] #, 2, 4]    # are bigger numbers then 2 even worth it?! Recommended are 0xFFFF as max.
+  - name: LWIP_SND_BUF
+    type: int
+    only: [1] #, 2, 4]    # are bigger numbers then 2 even worth it?! Recommended are 0xFFFF as max.
   # -----------------------------------
 
   #! - name: LWIP_POOLS_TRY_BIGGER_POOL
@@ -132,6 +132,7 @@ runs:
         --set LWIP_UKNETDEV_POLLONLY=$LWIP_UKNETDEV_POLLONLY \
         --set LWIP_POOLS=$LWIP_POOLS \
         --set LWIP_TCP_QUEUE_OOSEQ=$LWIP_TCP_QUEUE_OOSEQ \
+        --set LWIP_SND_BUF=$LWIP_SND_BUF \
         --set LIBTLSF_TLSF_LOG2_SLI=$LIBTLSF_TLSF_LOG2_SLI \
         --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
         --yes LIBVFSCORE_ROOTFS_RAMFS \
