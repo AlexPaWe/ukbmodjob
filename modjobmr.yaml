@@ -24,9 +24,9 @@ params:
   # -----------------------------------
 
   # Chose allocator:
-  - name: LIBUKBOOT_INITALLOC
-    type: string
-    only: ["LIBUKALLOCBBUDDY"] #, "n"]
+  # - name: LIBUKBOOT_INITALLOC
+  #   type: string
+  #   only: ["LIBUKALLOCBBUDDY"] #, "n"] # how is this done correctly?
 
   # Mimalloc options: (Mimalloc does not work yet!)
   # - name: LIBMIMALLOC_MIMALLOC_DEBUG
@@ -44,9 +44,9 @@ params:
 
   # LWIP options:
   #------------------------------------
-  #!- name: LWIP_TCP_QUEUE_OOSEQ
-  #!  type: int
-  #!  only: [0] #, 1, 2, 3, 4]
+  - name: LWIP_TCP_QUEUE_OOSEQ
+    type: int
+    only: [0] #, 1, 2, 3, 4]
 
   #!- name: LWIP_SND_BUF
   #!  type: int
@@ -131,7 +131,7 @@ runs:
         --set LWIP_NUM_TCPLISTENERS=$LWIP_NUM_TCPLISTENERS \
         --set LWIP_UKNETDEV_POLLONLY=$LWIP_UKNETDEV_POLLONLY \
         --set LWIP_POOLS=$LWIP_POOLS \
-        --set LIBUKBOOT_INITALLOC=$LIBUKBOOT_INITALLOC \
+        --set LWIP_TCP_QUEUE_OOSEQ=$LWIP_TCP_QUEUE_OOSEQ \
         --set LIBTLSF_TLSF_LOG2_SLI=$LIBTLSF_TLSF_LOG2_SLI \
         --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
         --yes LIBVFSCORE_ROOTFS_RAMFS \
