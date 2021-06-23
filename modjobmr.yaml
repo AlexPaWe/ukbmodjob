@@ -129,7 +129,6 @@ runs:
       done
 
       cd /usr/src/unikraft/apps/nginx
-      SET_ALLOCATOR=""
       if [[ $ALLOCATOR == "bbuddy" ]]; then \
         SET_ALLOCATOR="--set LIBUKBOOT_INITBBUDY=y" \
       fi
