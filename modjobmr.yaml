@@ -113,7 +113,7 @@ runs:
         --no  LIB9PFS \
         --no  LIBUK9P
 
-      kraft build --no-progress
+      kraft build
       cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
       if [[ $ACCESS_LOG == "y" ]]; then \
         export ACCESS_LOG="\/dev\/stdout"; \
