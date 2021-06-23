@@ -19,6 +19,26 @@ params:
   # -----------------------------------
   # Added by me:
   # -----------------------------------
+
+  # Allocator options:
+  # -----------------------------------
+
+  # Mimalloc options:
+  # - name: LIBMIMALLOC_MIMALLOC_DEBUG
+  #   type: int
+  #   only: [0] #, 1, 2]
+
+  # - name: LIBMIMALLOC_ASSERT
+  #   type: string
+  #   only: ["y"] #, "n"]
+
+  # TLSF specific options:
+  - name: LIBTLSF_TLSF_LOG2_SLI
+    type: int
+    only: [4] #, 5, 6, 7] # do not try more then 7
+
+  # LWIP options:
+  #------------------------------------
   #!- name: LWIP_TCP_QUEUE_OOSEQ
   #!  type: int
   #!  only: [0] #, 1, 2, 3, 4]
@@ -113,7 +133,7 @@ runs:
         --no  LIB9PFS \
         --no  LIBUK9P
 
-      kraft build --no-progress
+      kraft build
       cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
       if [[ $ACCESS_LOG == "y" ]]; then \
         export ACCESS_LOG="\/dev\/stdout"; \
