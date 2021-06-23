@@ -26,7 +26,7 @@ params:
   # Chose allocator:
   - name: LIBUKBOOT_INITALLOC
     type: string
-    only: ["Binary buddy allocator"] #, "Region allocator", "tinyalloc", "TLSF", "None"]
+    only: [LIBUKBOOT_INITBBUDDY] #, "Region allocator", "tinyalloc", "TLSF", "None"]
 
   # Mimalloc options: (Mimalloc does not work yet!)
   # - name: LIBMIMALLOC_MIMALLOC_DEBUG
