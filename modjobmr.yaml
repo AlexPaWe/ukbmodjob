@@ -137,7 +137,7 @@ runs:
         SET_ALLOCATOR=--set LIBUKBOOT_INITREGION=y; \
       fi
       if [[ $ALLOCATOR == "tinyalloc" ]]; then \
-        SET_ALLOCATOR=--set LIBUKBOOT_INITTINYALLOC=y; \
+        set -- "$@" --set LIBUKBOOT_INITTINYALLOC=y; \
       fi
       if [[ $ALLOCATOR == "tlsf" ]]; then \
         SET_ALLOCATOR=--set LIBUKBOOT_INITTLSF=y; \
