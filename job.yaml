@@ -26,7 +26,7 @@ params:
   # Chose allocator:
   - name: ALLOCATOR
     type: string
-    only: ["tlsf"] #, "bbudy" "regalloc", "tinyalloc", "tlsf", "none"] # tlsf depends on LIBTLSF_INCLUDED
+    only: ["bbuddy"] #, "bbuddy" "regalloc", "tinyalloc", "tlsf", "none"] # tlsf does not work yet!
 
   # Tinyalloc options:
   - name: LIBTINYALLOC_DISABLE_SPLIT
@@ -54,7 +54,7 @@ params:
   #   type: string
   #   only: ["y"] #, "n"]
 
-  # TLSF specific options:
+  # TLSF specific options: (TLSF does not work yet!)
   - name: LIBTLSF_TLSF_LOG2_SLI
     type: int
     only: [4] #, 5, 6, 7] # do not try more then 7
