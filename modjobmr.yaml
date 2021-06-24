@@ -31,7 +31,19 @@ params:
   # Tinyalloc options:
   - name: LIBTINYALLOC_DISABLE_SPLIT
     type: string
-    only: ["y"] #, n] # default n
+    only: ["n"] #, y] # default n
+
+  - name: LIBTINYALLOC_DISABLE_COMPACT
+    type: string
+    only: ["n"] #, "y"]
+
+  - name: LIBTINYALLOC_SPLIT_THRESH
+    type: int
+    only: [8] #, 16, 32, 64, 128, 256, 518, 1024] # (try 8 and more); default 16
+  
+  - name: LIBTINYALLOC_ALIGNMENT
+    type: int
+    only: [8] #, 16, 32, 64, 128, 256, 518, 1024] # (try 8 and more)
     
   # Mimalloc options: (Mimalloc does not work yet!)
   # - name: LIBMIMALLOC_MIMALLOC_DEBUG
@@ -154,6 +166,9 @@ runs:
         --set LWIP_POOLS=$LWIP_POOLS \
         "$@" \
         --set LIBTINYALLOC_DISABLE_SPLIT=$LIBTINYALLOC_DISABLE_SPLIT \
+        --set LIBTINYALLOC_DISABLE_COMPACT=$LIBTINYALLOC_DISABLE_COMPACT \
+        --set LIBTINYALLOC_SPLIT_THRESH=$LIBTINYALLOC_SPLIT_THRESH \
+        --set LIBTINYALLOC_ALIGNMENT=$LIBTINYALLOC_ALIGNMENT \
         --set LWIP_TCP_QUEUE_OOSEQ=$LWIP_TCP_QUEUE_OOSEQ \
         --set LWIP_SND_BUF=$LWIP_SND_BUF \
         --set LIBTLSF_TLSF_LOG2_SLI=$LIBTLSF_TLSF_LOG2_SLI \
