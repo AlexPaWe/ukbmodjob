@@ -19,31 +19,56 @@ params:
   # -----------------------------------
   # Added by me:
   # -----------------------------------
-  
+
   # Allocator options:
   # -----------------------------------
 
-  # Mimalloc options:
-  - name: LIBMIMALLOC_MIMALLOC_DEBUG
-    type: int
-    only: [0] #, 1, 2]
-
-  - name: LIBMIMALLOC_ASSERT
+  # Chose allocator:
+  - name: ALLOCATOR
     type: string
-    only: ["y"] #, "n"]
+    only: ["bbuddy"] #, "bbuddy" "regalloc", "tinyalloc", "tlsf", "none"] # tlsf does not work yet!
 
-  # TLSF specific options:
+  # Tinyalloc options:
+  - name: LIBTINYALLOC_DISABLE_SPLIT
+    type: string
+    only: ["n"] #, y] # default n
+
+  - name: LIBTINYALLOC_DISABLE_COMPACT
+    type: string
+    only: ["n"] #, "y"]
+
+  - name: LIBTINYALLOC_SPLIT_THRESH
+    type: int
+    only: [16] #, 8, 16, 32, 64, 128, 256, 518, 1024] # (try 8 and more); default 16
+  
+  - name: LIBTINYALLOC_ALIGNMENT
+    type: int
+    only: [8] #, 16, 32, 64, 128, 256, 518, 1024] # (try 8 and more); default 8
+    
+  # Mimalloc options: (Mimalloc does not work yet!)
+  # - name: LIBMIMALLOC_MIMALLOC_DEBUG
+  #   type: int
+  #   only: [0] #, 1, 2]
+
+  # - name: LIBMIMALLOC_ASSERT
+  #   type: string
+  #   only: ["y"] #, "n"]
+
+  # TLSF specific options: (TLSF does not work yet!)
   - name: LIBTLSF_TLSF_LOG2_SLI
     type: int
     only: [4] #, 5, 6, 7] # do not try more then 7
 
-  #!- name: LWIP_TCP_QUEUE_OOSEQ
-  #!  type: int
-  #!  only: [0] #, 1, 2, 3, 4]
+  # LWIP options:
+  #------------------------------------
+  - name: LWIP_TCP_QUEUE_OOSEQ
+    type: int
+    only: [0] #, 1, 2, 3, 4]
 
-  #!- name: LWIP_SND_BUF
-  #!  type: int
-  #!  only: [1] #, 2, 4]    # are bigger numbers then 2 even worth it?! Recommended are 0xFFFF as max.
+  - name: LWIP_SND_BUF
+    type: int
+    only: [1] #, 2, 4]    # are bigger numbers then 2 even worth it?! Recommended are 0xFFFF as max.
+  # -----------------------------------
   # -----------------------------------
 
   #! - name: LWIP_POOLS_TRY_BIGGER_POOL
@@ -99,14 +124,16 @@ outputs:
 
 runs:
   - name: build
-    image: ukbench/unikraft
-    cores: 1
+    image: alexpawe/ukbench-unikraft:latest
+    cores: 30
     devices:
       - /dev/urandom
     cmd:
       |
       set -ex
       export UK_WORKDIR=/usr/src/unikraft
+      export UK_CACHEDIR=/usr/src/unikraft/.kraftcache
+      export KRAFTRC=/usr/src/unikraft/.kraftrc
       export LC_ALL=C.UTF-8
       export LANG=C.UTF-8
       for env in $(cat /etc/environment); do \
@@ -114,7 +141,22 @@ runs:
       done
 
       cd /usr/src/unikraft/apps/nginx
-
+      if [[ $ALLOCATOR == "bbuddy" ]]; then \
+        set -- "$@" --set LIBUKBOOT_INITBBUDY=y; \
+      fi
+      if [[ $ALLOCATOR == "regalloc" ]]; then \
+        set -- "$@" --set LIBUKBOOT_INITREGION=y; \
+      fi
+      if [[ $ALLOCATOR == "tinyalloc" ]]; then \
+        set -- "$@" --set LIBUKBOOT_INITTINYALLOC=y; \
+      fi
+      if [[ $ALLOCATOR == "tlsf" ]]; then \
+        set -- "$@" --set LIBUKBOOT_INITTLSF=y; \
+      fi
+      if [[ $ALLOCATOR == "none" ]]; then \
+        set -- "$@" --set LIBUKBOOT_NOALLOC=y; \
+      fi
+      
       kraft -v configure \
         --arch x86_64 \
         --plat kvm \
@@ -122,15 +164,21 @@ runs:
         --set LWIP_NUM_TCPLISTENERS=$LWIP_NUM_TCPLISTENERS \
         --set LWIP_UKNETDEV_POLLONLY=$LWIP_UKNETDEV_POLLONLY \
         --set LWIP_POOLS=$LWIP_POOLS \
+        "$@" \
+        --set LIBTINYALLOC_DISABLE_SPLIT=$LIBTINYALLOC_DISABLE_SPLIT \
+        --set LIBTINYALLOC_DISABLE_COMPACT=$LIBTINYALLOC_DISABLE_COMPACT \
+        --set LIBTINYALLOC_SPLIT_THRESH=$LIBTINYALLOC_SPLIT_THRESH \
+        --set LIBTINYALLOC_ALIGNMENT=$LIBTINYALLOC_ALIGNMENT \
+        --set LWIP_TCP_QUEUE_OOSEQ=$LWIP_TCP_QUEUE_OOSEQ \
+        --set LWIP_SND_BUF=$LWIP_SND_BUF \
+        --set LIBTLSF_TLSF_LOG2_SLI=$LIBTLSF_TLSF_LOG2_SLI \
         --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
         --yes LIBVFSCORE_ROOTFS_RAMFS \
         --yes LIBINITRAMFS \
         --yes LIBCPIO \
         --no  LIB9PFS \
-        --no  LIBUK9P \
-        --set LIBMIMALLOC_MIMALLOC_DEBUG=$LIBMIMALLOC_MIMALLOC_DEBUG \
-        --set LIBMIMALLOC_ASSERT=$LIBMIMALLOC_ASSERT \
-        --set LIBTLSF_TLSF_LOG2_SLI=$LIBTLSF_TLSF_LOG2_SLI # added by me
+        --no  LIBUK9P
+
       kraft build
       cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
       if [[ $ACCESS_LOG == "y" ]]; then \
@@ -149,7 +197,7 @@ runs:
       find -depth -print | tac | bsdcpio -o --format newc > ../initramfs.cpio
 
   - name: run
-    image: ukbench/unikraft
+    image: alexpawe/ukbench-unikraft:latest
     cores: 30
     devices:
       - /dev/kvm
