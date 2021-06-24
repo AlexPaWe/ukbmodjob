@@ -131,19 +131,19 @@ runs:
       cd /usr/src/unikraft/apps/nginx
       SET_ALLOCATOR=""
       if [[ $ALLOCATOR == "bbuddy" ]]; then \
-        SET_ALLOCATOR=--set LIBUKBOOT_INITBBUDY=y; \
+        set -- "$@" --set LIBUKBOOT_INITBBUDY=y; \
       fi
       if [[ $ALLOCATOR == "regalloc" ]]; then \
-        SET_ALLOCATOR=--set LIBUKBOOT_INITREGION=y; \
+        set -- "$@" --set LIBUKBOOT_INITREGION=y; \
       fi
       if [[ $ALLOCATOR == "tinyalloc" ]]; then \
         set -- "$@" --set LIBUKBOOT_INITTINYALLOC=y; \
       fi
       if [[ $ALLOCATOR == "tlsf" ]]; then \
-        SET_ALLOCATOR=--set LIBUKBOOT_INITTLSF=y; \
+        set -- "$@" --set LIBUKBOOT_INITTLSF=y; \
       fi
       if [[ $ALLOCATOR == "none" ]]; then \
-        SET_ALLOCATOR=--set LIBUKBOOT_NOALLOC=y; \
+        set -- "$@" --set LIBUKBOOT_NOALLOC=y; \
       fi
       
       kraft -v configure \
