@@ -26,7 +26,7 @@ params:
   # Chose allocator:
   - name: ALLOCATOR
     type: string
-    only: ["bbuddy"] #, "bbuddy" "regalloc", "tinyalloc", "tlsf", "none"] # tlsf does not work yet!
+    only: ["tinyalloc"] #, "bbuddy" "regalloc", "tinyalloc", "tlsf", "none"] # tlsf does not work yet!
 
   # Tinyalloc options:
   - name: LIBTINYALLOC_DISABLE_SPLIT
@@ -148,10 +148,15 @@ runs:
         set -- "$@" --set LIBUKBOOT_INITREGION=y; \
       fi
       if [[ $ALLOCATOR == "tinyalloc" ]]; then \
-        set -- "$@" --set LIBUKBOOT_INITTINYALLOC=y; \
+        set -- "$@" --set LIBUKBOOT_INITTINYALLOC=y \
+                    --set LIBTINYALLOC_DISABLE_SPLIT=$LIBTINYALLOC_DISABLE_SPLIT \
+                    --set LIBTINYALLOC_DISABLE_COMPACT=$LIBTINYALLOC_DISABLE_COMPACT \
+                    --set LIBTINYALLOC_SPLIT_THRESH=$LIBTINYALLOC_SPLIT_THRESH \
+                    --set LIBTINYALLOC_ALIGNMENT=$LIBTINYALLOC_ALIGNMENT; \
       fi
       if [[ $ALLOCATOR == "tlsf" ]]; then \
-        set -- "$@" --set LIBUKBOOT_INITTLSF=y; \
+        set -- "$@" --set LIBUKBOOT_INITTLSF=y \
+                    --set LIBTLSF_TLSF_LOG2_SLI=$LIBTLSF_TLSF_LOG2_SLI; \
       fi
       if [[ $ALLOCATOR == "none" ]]; then \
         set -- "$@" --set LIBUKBOOT_NOALLOC=y; \
@@ -165,13 +170,8 @@ runs:
         --set LWIP_UKNETDEV_POLLONLY=$LWIP_UKNETDEV_POLLONLY \
         --set LWIP_POOLS=$LWIP_POOLS \
         "$@" \
-        --set LIBTINYALLOC_DISABLE_SPLIT=$LIBTINYALLOC_DISABLE_SPLIT \
-        --set LIBTINYALLOC_DISABLE_COMPACT=$LIBTINYALLOC_DISABLE_COMPACT \
-        --set LIBTINYALLOC_SPLIT_THRESH=$LIBTINYALLOC_SPLIT_THRESH \
-        --set LIBTINYALLOC_ALIGNMENT=$LIBTINYALLOC_ALIGNMENT \
         --set LWIP_TCP_QUEUE_OOSEQ=$LWIP_TCP_QUEUE_OOSEQ \
         --set LWIP_SND_BUF=$LWIP_SND_BUF \
-        --set LIBTLSF_TLSF_LOG2_SLI=$LIBTLSF_TLSF_LOG2_SLI \
         --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
         --yes LIBVFSCORE_ROOTFS_RAMFS \
         --yes LIBINITRAMFS \
