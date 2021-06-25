@@ -26,7 +26,7 @@ params:
   # Chose allocator:
   - name: ALLOCATOR
     type: string
-    only: ["tinyalloc"] #, "bbuddy" "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"] # tlsf does not work yet!
+    only: ["tlsf"] #, "bbuddy" "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"] # tlsf does not work yet!
 
   # Tinyalloc options:
   - name: LIBTINYALLOC_DISABLE_SPLIT
