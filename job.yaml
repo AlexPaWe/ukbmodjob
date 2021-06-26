@@ -39,7 +39,7 @@ params:
 
   - name: LIBTINYALLOC_SPLIT_THRESH
     type: int
-    only: [16] #, 4, 8, 12, 16, 20, 24, 28, 32,] # (try 8 and more); default 16; are this too much values?
+    only: [16] #, 8, 12, 16, 20, 24, 28, 32,] # (try 8 and more); default 16; are this too much values?
   
   - name: LIBTINYALLOC_ALIGNMENT
     type: int
