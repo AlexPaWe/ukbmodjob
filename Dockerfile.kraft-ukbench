@@ -28,9 +28,8 @@ RUN set -xe; \
       bsdcpio; \
     echo "" > $KRAFTRC; \
     kraft list add https://github.com/alexpawe/unikraft.git; \
-    kraft list add https://github.com/unikraft/lib-tlsf.git; \
-    kraft list add https://github.com/unikraft/lib-tinyalloc.git; \
-    kraft list add https://github.com/unikraft/lib-mimalloc.git; \
+    kraft list add https://github.com/alexpawe/lib-tlsf.git; \
+    kraft list add https://github.com/alexpawe/lib-tinyalloc.git; \
     kraft list add https://github.com/alexpawe/lib-lwip.git; \
     kraft list add https://github.com/unikraft/lib-pthread-embedded.git; \
     kraft list add https://github.com/unikraft/lib-newlib.git; \
@@ -40,7 +39,6 @@ RUN set -xe; \
     kraft list pull unikraft@staging; \
     kraft list pull lib/tlsf@staging; \
     kraft list pull lib/tinyalloc@staging; \
-    kraft list pull lib/mimalloc@staging; \
     kraft list pull lib/pthread-embedded@staging; \
     kraft list pull lib/newlib@staging; \
     kraft list pull lib/lwip@staging; \
