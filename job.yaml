@@ -45,7 +45,7 @@ params:
     type: int
     only: [8] #, 16, 32, 64, 128, 256, 518, 1024] # (try 8 and more); default 8
     
-  # Mimalloc options: (Mimalloc does not work yet!)
+  # Mimalloc options:
   - name: LIBMIMALLOC_MIMALLOC_DEBUG
     type: int
     only: [0] #, 1, 2]
@@ -184,6 +184,7 @@ runs:
         --no  LIB9PFS \
         --no  LIBUK9P
 
+      kraft prepare
       kraft build
       cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
       if [[ $ACCESS_LOG == "y" ]]; then \
