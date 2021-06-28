@@ -26,7 +26,7 @@ params:
   # Chose allocator:
   - name: ALLOCATOR
     type: string
-    only: ["tinyalloc"] #, "bbuddy" "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"] # tinyalloc does not work yet!
+    only: ["tlsf"] #, "bbuddy" "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"] # tinyalloc does not work yet!
 
   # Tinyalloc options:
   - name: LIBTINYALLOC_DISABLE_SPLIT
@@ -124,7 +124,7 @@ outputs:
 
 runs:
   - name: build
-    image: alexpawe/ukbench-unikraft:latest
+    image: alexpawe/ukbench-unikraft-test:latest
     cores: 30
     devices:
       - /dev/urandom
@@ -203,7 +203,7 @@ runs:
       find -depth -print | tac | bsdcpio -o --format newc > ../initramfs.cpio
 
   - name: run
-    image: alexpawe/ukbench-unikraft:latest
+    image: alexpawe/ukbench-unikraft-test:latest
     cores: 30
     devices:
       - /dev/kvm
