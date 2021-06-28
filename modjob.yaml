@@ -33,7 +33,7 @@ params:
   # Chose allocator:
   - name: ALLOCATOR
     type: string
-    only: ["tinyalloc"] #, "bbuddy" "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"] # tlsf does not work yet!
+    only: ["poolalloc"] #, "bbuddy", "poolalloc" "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"] # tlsf does not work yet!
 
   # Tinyalloc options:
   - name: LIBTINYALLOC_DISABLE_SPLIT
@@ -150,6 +150,9 @@ runs:
       cd /usr/src/unikraft/apps/nginx
       if [[ $ALLOCATOR == "bbuddy" ]]; then \
         set -- "$@" --set LIBUKBOOT_INITBBUDY=y; \
+      fi
+      if [[ $ALLOCATOR == "poolalloc" ]]; then \
+        set -- "$@" --set LIBUKALLOCPOOL=y; \
       fi
       if [[ $ALLOCATOR == "regalloc" ]]; then \
         set -- "$@" --set LIBUKBOOT_INITREGION=y; \
