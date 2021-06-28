@@ -23,7 +23,7 @@ params:
   # Platform options:
   #------------------------------------
 
-  - name: CONFIG_HZ # only necessary as long as unikraft does not support dynamic timer interrupt frequency.
+  - name: HZ # only necessary as long as unikraft does not support dynamic timer interrupt frequency.
     type: int
     only: [100, 250, 300, 1000]
 
@@ -181,7 +181,7 @@ runs:
         --set LWIP_NUM_TCPLISTENERS=$LWIP_NUM_TCPLISTENERS \
         --set LWIP_UKNETDEV_POLLONLY=$LWIP_UKNETDEV_POLLONLY \
         --set LWIP_POOLS=$LWIP_POOLS \
-        --set CONFIG_HZ=$CONFIG_HZ \
+        --set HZ=$HZ \
         "$@" \
         --set LWIP_TCP_QUEUE_OOSEQ=$LWIP_TCP_QUEUE_OOSEQ \
         --set LWIP_SND_BUF=$LWIP_SND_BUF \
