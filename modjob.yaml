@@ -23,7 +23,7 @@ params:
   # Platform options:
   #------------------------------------
 
-  - name: CONFIG_HZ
+  - name: CONFIG_HZ # only necessary as long as unikraft does not support dynamic timer interrupt frequency.
     type: int
     only: [100, 250, 300, 1000]
 
