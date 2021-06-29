@@ -25,7 +25,7 @@ params:
 
   - name: HZ # only necessary as long as unikraft does not support dynamic timer interrupt frequency.
     type: int
-    only: [100, 250, 300, 1000]
+    only: [100] #, 250, 300, 1000]
 
   # Allocator options:
   # -----------------------------------
@@ -75,6 +75,10 @@ params:
   - name: LWIP_SND_BUF
     type: int
     only: [1] #, 2, 4]    # are bigger numbers then 2 even worth it?! Recommended are 0xFFFF as max.
+  
+  - name: LWIP_DNS_MAX_SERVERS
+    type: int
+    only: [2]
   # -----------------------------------
   # -----------------------------------
 
@@ -188,6 +192,7 @@ runs:
         "$@" \
         --set LWIP_TCP_QUEUE_OOSEQ=$LWIP_TCP_QUEUE_OOSEQ \
         --set LWIP_SND_BUF=$LWIP_SND_BUF \
+        --set LWIP_DNS_MAX_SERVERS=$LWIP_DNS_MAX_SERVERS \
         --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
         --yes LIBVFSCORE_ROOTFS_RAMFS \
         --yes LIBINITRAMFS \
