@@ -78,7 +78,7 @@ params:
   
   - name: LWIP_DNS_MAX_SERVERS
     type: int
-    only: [2]
+    only: [2] #1, 2, 5] #default 2
   # -----------------------------------
   # -----------------------------------
 
