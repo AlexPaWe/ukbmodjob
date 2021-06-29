@@ -25,7 +25,8 @@ RUN set -xe; \
       procps \
       bridge-utils \
       net-tools \
-      bsdcpio; \
+      bsdcpio \
+      bzip2; \
     echo "" > $KRAFTRC; \
     kraft list add https://github.com/alexpawe/unikraft.git; \
     kraft list add https://github.com/alexpawe/lib-tlsf.git; \
