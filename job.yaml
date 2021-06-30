@@ -72,6 +72,10 @@ params:
     type: int
     only: [0] #, 1, 2, 3, 4]
 
+  - name: LWIP_TCPIP_THREAD_STACKSIZE
+    type: int
+    only: [0, 256, 512, 1024, 2048, 4096, 8192, 16384] #in kbytes; 16k should be more then enough for stack size
+
   - name: LWIP_SND_BUF
     type: int
     only: [1] #, 2, 4]    # are bigger numbers then 2 even worth it?! Recommended are 0xFFFF as max.
@@ -191,6 +195,7 @@ runs:
         --set HZ=$HZ \
         "$@" \
         --set LWIP_TCP_QUEUE_OOSEQ=$LWIP_TCP_QUEUE_OOSEQ \
+        --set LWIP_TCPIP_THREAD_STACKSIZE=$LWIP_TCPIP_THREAD_STACKSIZE \
         --set LWIP_SND_BUF=$LWIP_SND_BUF \
         --set LWIP_DNS_MAX_SERVERS=$LWIP_DNS_MAX_SERVERS \
         --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
