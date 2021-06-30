@@ -87,6 +87,10 @@ params:
   - name: LWIP_DNS_LOCAL_HOST_LIST
     type: string
     only: ["y", "n"] # default y
+
+  - name: LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC # should only be available if LWIP_DNS_LOCAL_HOST_LIST is set to true.
+    type: string
+    only: ["y", "n"]
   # -----------------------------------
   # -----------------------------------
 
@@ -203,6 +207,7 @@ runs:
         --set LWIP_SND_BUF=$LWIP_SND_BUF \
         --set LWIP_DNS_MAX_SERVERS=$LWIP_DNS_MAX_SERVERS \
         --set LWIP_DNS_LOCAL_HOST_LIST=$LWIP_DNS_LOCAL_HOST_LIST \
+        --set LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC=$LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC \
         --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
         --yes LIBVFSCORE_ROOTFS_RAMFS \
         --yes LIBINITRAMFS \
