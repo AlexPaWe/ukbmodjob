@@ -83,6 +83,10 @@ params:
   - name: LWIP_DNS_MAX_SERVERS
     type: int
     only: [2] #1, 2, 5, 10] #default 2
+
+  - name: LWIP_DNS_LOCAL_HOST_LIST
+    type: string
+    only: ["y", "n"] # default y
   # -----------------------------------
   # -----------------------------------
 
@@ -198,6 +202,7 @@ runs:
         --set LWIP_TCPIP_THREAD_STACKSIZE=$LWIP_TCPIP_THREAD_STACKSIZE \
         --set LWIP_SND_BUF=$LWIP_SND_BUF \
         --set LWIP_DNS_MAX_SERVERS=$LWIP_DNS_MAX_SERVERS \
+        --set LWIP_DNS_LOCAL_HOST_LIST=$LWIP_DNS_LOCAL_HOST_LIST \
         --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
         --yes LIBVFSCORE_ROOTFS_RAMFS \
         --yes LIBINITRAMFS \
