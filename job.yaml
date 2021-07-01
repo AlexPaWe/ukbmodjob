@@ -77,7 +77,7 @@ params:
 
   - name: LWIP_TCP_SND_BUF
     type: int
-    only: [1] #, 2, 4]    # are bigger numbers then 2 even worth it?! Recommended are 0xFFFF as max.
+    only: [1024, 524288, 1048576, 1572864, 2097152]    # in bytes; default 1048576=1GB; 1MB, 0.5GB, 1GB, 1.5GB, 2GB; these values might need to be more finetuned
   
   - name: LWIP_DNS_MAX_SERVERS
     type: int
