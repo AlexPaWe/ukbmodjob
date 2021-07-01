@@ -125,7 +125,7 @@ params:
   
   - name: NUM_PARALLEL_CONNS
     type: int
-    only: [30]
+    only: [5, 10, 30, 64]
 
 inputs:
   - source: /etc/resolv.conf
