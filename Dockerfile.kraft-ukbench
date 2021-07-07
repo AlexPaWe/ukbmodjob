@@ -16,6 +16,7 @@ ARG UK_KRAFT_GITHUB_TOKEN=
 ENV KRAFTRC=/usr/src/unikraft/.kraftrc
 
 COPY --from=wrk /wrk/wrk /usr/local/bin/wrk
+COPY .kraftrc /usr/src/unikraft/.kraftrc
 
 RUN set -xe; \
     apt-get update; \
@@ -27,16 +28,6 @@ RUN set -xe; \
       net-tools \
       bsdcpio \
       bzip2; \
-    echo "" > $KRAFTRC; \
-    kraft list add https://github.com/alexpawe/unikraft.git; \
-    kraft list add https://github.com/alexpawe/lib-tlsf.git; \
-    kraft list add https://github.com/alexpawe/lib-tinyalloc.git; \
-    kraft list add https://github.com/alexpawe/lib-mimalloc.git; \
-    kraft list add https://github.com/alexpawe/lib-lwip.git; \
-    kraft list add https://github.com/unikraft/lib-pthread-embedded.git; \
-    kraft list add https://github.com/unikraft/lib-newlib.git; \
-    kraft list add https://github.com/unikraft/lib-nginx.git; \
-    kraft list add https://github.com/alexpawe/app-nginx.git; \
     kraft list update; \
     kraft list pull unikraft@staging; \
     kraft list pull lib/tlsf@staging; \

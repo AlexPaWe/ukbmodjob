@@ -69,15 +69,15 @@ params:
   #------------------------------------
   - name: LWIP_TCP_QUEUE_OOSEQ
     type: string
-    only: ["y", "n"]
+    only: ["y"] #, "n"]
 
   - name: LWIP_TCPIP_THREAD_STACKSIZE
     type: int
-    only: [0, 256, 512, 1024, 2048, 4096, 8192, 16384] #in kbytes; 16k should be more then enough for stack size
+    only: [0] #, 256, 512, 1024, 2048, 4096, 8192, 16384] #in kbytes; 16k should be more then enough for stack size
 
   - name: LWIP_TCP_SND_BUF
     type: int
-    only: [256000, 524288, 1048576, 1572864, 2097152]    # in bytes; default 1048576=1GB; 1MB, 0.5GB, 1GB, 1.5GB, 2GB; these values might need to be more finetuned
+    only: [256000] #, 524288, 1048576, 1572864, 2097152]    # in bytes; default 1048576=1GB; 1MB, 0.5GB, 1GB, 1.5GB, 2GB; these values might need to be more finetuned
   
   - name: LWIP_DNS_MAX_SERVERS
     type: int
@@ -85,11 +85,11 @@ params:
 
   - name: LWIP_DNS_LOCAL_HOST_LIST
     type: string
-    only: ["y", "n"] # default y
+    only: ["y"] #, "n"] # default y
 
   - name: LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC # should only be available if LWIP_DNS_LOCAL_HOST_LIST is set to true.
     type: string
-    only: ["y", "n"]
+    only: ["y"] #, "n"]
   # -----------------------------------
   # -----------------------------------
 
@@ -125,7 +125,7 @@ params:
   
   - name: NUM_PARALLEL_CONNS
     type: int
-    only: [5, 10, 30, 64]
+    only: [5] #, 10, 30, 64]
 
 inputs:
   - source: /etc/resolv.conf
@@ -147,7 +147,7 @@ outputs:
 runs:
   - name: build
     image: alexpawe/ukbench-unikraft-test
-    cores: 30
+    cores: 3
     devices:
       - /dev/urandom
     cmd:
@@ -192,7 +192,7 @@ runs:
         set -- "$@" --set LIBUKBOOT_NOALLOC=y; \
       fi
       
-      kraft -v configure \
+      kraft -v configure -F \
         --arch x86_64 \
         --plat kvm \
         --set LWIP_NUM_TCPCON=$LWIP_NUM_TCPCON \
@@ -208,14 +208,14 @@ runs:
         --set LWIP_DNS_LOCAL_HOST_LIST=$LWIP_DNS_LOCAL_HOST_LIST \
         --set LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC=$LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC \
         --set LIBDEVFS_DEV_STDOUT=$ACCESS_LOG \
-        --yes LIBVFSCORE_ROOTFS_RAMFS \
-        --yes LIBINITRAMFS \
-        --yes LIBCPIO \
+        --yes LIBVFSCORE_ROOTFS_INITRD \
+        --yes LIBUKCPIO \
+        --yes LIBRAMFS \
         --no  LIB9PFS \
         --no  LIBUK9P
 
-      kraft prepare
-      kraft build
+      kraft -v prepare
+      kraft -v build --no-progress
       cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
       if [[ $ACCESS_LOG == "y" ]]; then \
         export ACCESS_LOG="\/dev\/stdout"; \
@@ -234,7 +234,7 @@ runs:
 
   - name: run
     image: alexpawe/ukbench-unikraft-test
-    cores: 30
+    cores: 3
     devices:
       - /dev/kvm
       - /dev/net/tun
