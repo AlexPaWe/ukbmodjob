@@ -33,7 +33,7 @@ params:
   # Chose allocator:
   - name: ALLOCATOR
     type: string
-    only: ["bbuddy", "poolalloc" "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"]
+    only: ["bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"]
     params:
         # Tinyalloc options:
         - name: LIBTINYALLOC_DISABLE_SPLIT
