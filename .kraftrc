@@ -1,5 +1,5 @@
 [fetch]
-prioritize_origin = true
+prioritze_origin = true
 
 [list]
 origins = [
