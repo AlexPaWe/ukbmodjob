@@ -40,7 +40,7 @@ params:
     - name: LIBTINYALLOC_DISABLE_SPLIT
       when: "tinyalloc"
       type: string
-      only: ["n", "y"] # default n
+      only: ["n"] #, "y"] # default n
 
     - name: LIBTINYALLOC_DISABLE_COMPACT
       when: "tinyalloc"
