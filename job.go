@@ -345,7 +345,7 @@ func paramPermutations(param *JobParam) ([]TaskParam, error) {
 }
 
 // nextTask recursively iterates across paramters to generate a set of tasks
-func (j *Job) nextTask(i int, tasks []*Task, curr []TaskParam) ([]*Task, error) {
+func (j *Job) nextTask(i int, val string, tasks []*Task, curr []TaskParam) ([]*Task, error) {
   // List all permutations for this parameter
   var params []TaskParam
   var err error
@@ -376,15 +376,8 @@ func (j *Job) nextTask(i int, tasks []*Task, curr []TaskParam) ([]*Task, error) 
       j.Params = append(j.Params, JobParam{}) // Make space for new element
       copy(j.Params[(i+2):], j.Params[(i+1):]) // Shift elements
       j.Params[i+1] = subParam // Insert the new sub parameter
-
-      // DEBUGGING
-      fmt.Println(j.Params[i+1].Name)
     }
   }
-
-  // DEBUGGING
-  fmt.Println()
-  fmt.Println(j.Params)
 
   for _, param := range params {
     if len(curr) > 0 {
@@ -394,7 +387,19 @@ func (j *Job) nextTask(i int, tasks []*Task, curr []TaskParam) ([]*Task, error) 
       }
     }
 
-    curr = append(curr, param)
+    // Remember value if parameter has subparameters
+    if len(j.Params[i].Params) > 0 {
+      val = param.Value
+    }
+
+    // Check if when condition of a subparameter is met
+    if len(j.Params[i].When) > 0 {
+      if j.Params[i].When == val {
+        curr = append(curr, param)
+      }
+    } else {
+      curr = append(curr, param)
+    }
 
     // Break when there are no more parameters to iterate over, thus creating
     // the task.
@@ -410,7 +415,7 @@ func (j *Job) nextTask(i int, tasks []*Task, curr []TaskParam) ([]*Task, error) 
 
     // Otherwise, recursively parse parameters in-order    
     } else {
-      nextTasks, err := j.nextTask(i + 1, nil, curr)
+      nextTasks, err := j.nextTask(i + 1, val, nil, curr)
       if err != nil {
         return nil, err
       }
@@ -426,7 +431,7 @@ func (j *Job) nextTask(i int, tasks []*Task, curr []TaskParam) ([]*Task, error) 
 func (j *Job) tasks() ([]*Task, error) {
   var tasks []*Task
 
-  tasks, err := j.nextTask(0, tasks, nil)
+  tasks, err := j.nextTask(0, "", tasks, nil)
   if err != nil {
     return nil, err
   }
