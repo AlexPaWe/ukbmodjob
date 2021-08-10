@@ -213,61 +213,31 @@ func NewJob(filePath string, cfg *RuntimeConfig, dryRun bool) (*Job, error) {
 }
 
 //parseSubParams parses the subparameters of a given parameter depending on their when condition
-func parseSubParams(param *JobParam, val string) ([]TaskParam, error) {
-  var subParams []TaskParam
-  for _, subParam := range param.Params {
-    if val == subParam.When {
-      tsubParams, err := paramPermutations(&subParam)
-
-      if err != nil {
-        return nil, err
-      }
-
-      subParams = append(subParams, tsubParams...)
-    }
+func parseSubParam(subParam *JobParam, val string) ([]TaskParam, error) {
+  if val == subParam.When {
+    return paramPermutations(subParam)
   }
-
-  return subParams, nil
+  return nil, nil
 }
 
 // parseParamStr attends to string parameters and its possible permutations
 func parseParamStr(param *JobParam) ([]TaskParam, error) {
   var params []TaskParam
 
-  var tparam TaskParam
-  tparam.Name = param.Name
-  tparam.Type = param.Type
-
   if len(param.Only) > 0 {
     for _, val := range param.Only {
-      tparam.Value = val
-
-      params = append(params, tparam)
-
-      if len(param.Params) > 0 {
-        subParams, err := parseSubParams(param, tparam.Value)
-	
-	if err != nil {
-	  return nil, err
-	}
-	
-	params = append(params, subParams...)
-      }
+      params = append(params, TaskParam{
+        Name: param.Name,
+        Type: param.Type,
+        Value: val,
+      })
     }
   } else if len(param.Default) > 0 {
-    tparam.Value = param.Default
-
-    params = append(params, tparam)
-
-    if len(param.Params) > 0 {
-      subParams, err := parseSubParams(param, tparam.Value)
-      
-      if err != nil {
-        return nil, err
-      }
-      
-      params = append(params, subParams...)
-    }
+    params = append(params, TaskParam{
+      Name: param.Name,
+      Type: param.Type,
+      Value: param.Default,
+    })
   }
 
   return params, nil
@@ -377,10 +347,44 @@ func paramPermutations(param *JobParam) ([]TaskParam, error) {
 // nextTask recursively iterates across paramters to generate a set of tasks
 func (j *Job) nextTask(i int, tasks []*Task, curr []TaskParam) ([]*Task, error) {
   // List all permutations for this parameter
-  params, err := paramPermutations(&j.Params[i])
-  if err != nil {
-    return nil, err
+  var params []TaskParam
+  var err error
+  // Check if the parameter is a subparameter to the previous one
+  //if len(j.Params[i].When) > 0 {
+
+    // DEBUGGING
+    //fmt.Println(j.Params[i].Name)
+    //fmt.Println("is a subparameter")
+    //params, err = parseSubParam(&j.Params[i], curr[i-1].Value)
+    //if err != nil {
+      //return nil, err
+    //}
+
+    // DEBUGGING
+    //fmt.Println(params)
+  //} else {:
+    params, err = paramPermutations(&j.Params[i])
+    if err != nil {
+      return nil, err
+    //}
   }
+
+  // ADDED BY ME:
+  // If the current parameter has subparameters, add them to the jobs parameter list
+  if len(j.Params[i].Params) > 0 {
+    for _, subParam := range j.Params[i].Params {
+      j.Params = append(j.Params, JobParam{}) // Make space for new element
+      copy(j.Params[(i+2):], j.Params[(i+1):]) // Shift elements
+      j.Params[i+1] = subParam // Insert the new sub parameter
+
+      // DEBUGGING
+      fmt.Println(j.Params[i+1].Name)
+    }
+  }
+
+  // DEBUGGING
+  fmt.Println()
+  fmt.Println(j.Params)
 
   for _, param := range params {
     if len(curr) > 0 {
