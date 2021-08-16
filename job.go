@@ -338,6 +338,10 @@ func paramPermutations(param *JobParam) ([]TaskParam, error) {
 
 // nextTask recursively iterates across paramters to generate a set of tasks
 func (j *Job) nextTask(i int, val string, tasks []*Task, curr []TaskParam) ([]*Task, error) {
+
+  // DEBUGGING
+  fmt.Println(j.Params[i].Name)
+
   // List all permutations for this parameter
   params, err := paramPermutations(&j.Params[i])
   if err != nil {
@@ -361,41 +365,49 @@ func (j *Job) nextTask(i int, val string, tasks []*Task, curr []TaskParam) ([]*T
       }
     }
 
-    // Remember value if parameter has subparameters
-    if len(j.Params[i].Params) > 0 {
-      val = param.Value
-    }
-
-    // Check if when condition of a subparameter is met
+    // Check if when-condition of a subparameter is met
     if len(j.Params[i].When) > 0 {
+
       if j.Params[i].When == val {
-        curr = append(curr, param)
+	curr = append(curr, param)
       }
     } else {
       curr = append(curr, param)
     }
 
+    // Remember value if parameter has subparameters
+    if len(j.Params[i].Params) > 0 {
+      val = param.Value
+    }
+
     // Break when there are no more parameters to iterate over, thus creating
     // the task.
     if i + 1 == len(j.Params) {
-      var p = make([]TaskParam, len(j.Params))
+      var p = make([]TaskParam, len(curr)) // len(j.Params) used to be here instead of len(curr)
       copy(p, curr)
       task := &Task{
         Inputs:  &j.Inputs,
         Outputs: &j.Outputs,
         Params:   p,
       }
+      // DEBUGGING
+      fmt.Println("This task has been created:")
+      fmt.Println(task)
+
       tasks = append(tasks, task)
 
-    // Otherwise, recursively parse parameters in-order    
-    } else {
+      // Otherwise, recursively parse parameters in-order    
+      } else {
+      // DEBUGGING
+      fmt.Println("go down from parameter " + j.Params[i].Name)
+
       nextTasks, err := j.nextTask(i + 1, val, nil, curr)
       if err != nil {
         return nil, err
       }
 
       tasks = append(tasks, nextTasks...)
-    }
+      }
   }
 
   return tasks, nil
