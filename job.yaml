@@ -33,7 +33,7 @@ params:
   #  Chose allocator:
   - name: ALLOCATOR
     type: string
-    only: ["tinyalloc", "mimalloc"] #"bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"]
+    only: ["tinyalloc"] #, "mimalloc"] #"bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"]
     params:
   
     # Tinyalloc options:
@@ -116,7 +116,7 @@ params:
       - name: LIBUKDEBUG_TRACE_BUFFER_SIZE
         when: "y"
         type: int
-        only: [16384]     # TODO: Replace with something more fitting!
+        only: [16777216]     # TODO: Replace with something more fitting!
 
       - name: LIBUKDEBUG_ALL_TRACEPOINTS
         when: "y"
@@ -171,16 +171,20 @@ inputs:
     destination: /nginx-caching.conf
   - source: ./nginx-nocaching.conf
     destination: /nginx-nocaching.conf
+  - source: ./run-gdb
+    destination: /run-gdb
 
 outputs:
   - path: /usr/src/unikraft/apps/nginx/build/nginx_kvm-x86_64
+  - path: /usr/src/unikraft/apps/nginx/build/nginx_kvm-x86_64.dbg
   - path: /usr/src/unikraft/apps/nginx/initramfs.cpio
   - path: /results.txt
+  - path: /traces.dat
 
 runs:
   - name: build
-    image: alexpawe/ukbench-unikraft-test
-    cores: 3
+    image: alexpawe/ukbench-unikraft-test:test
+    cores: 78
     devices:
       - /dev/urandom
     cmd:
@@ -280,12 +284,12 @@ runs:
       find -depth -print | tac | bsdcpio -o --format newc > ../initramfs.cpio
 
   - name: run
-    image: alexpawe/ukbench-unikraft-test
+    image: alexpawe/ukbench-unikraft-test:test
     cores: 3
     devices:
       - /dev/kvm
       - /dev/net/tun
     capabilities:
       - CAP_NET_ADMIN
-    cmd: /test.sh
+    cmd: #/test.sh
 
