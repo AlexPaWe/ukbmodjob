@@ -25,7 +25,7 @@ params:
 
   - name: HZ # only necessary as long as unikraft does not support dynamic timer interrupt frequency.
     type: int
-    only: [100] #, 250, 300, 1000]
+    only: [100, 250, 300, 1000]
 
   # Allocator options:
   # -----------------------------------
@@ -33,14 +33,14 @@ params:
   #  Chose allocator:
   - name: ALLOCATOR
     type: string
-    only: ["tinyalloc"] #, "mimalloc"] #"bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"]
+    only: ["tinyalloc", "bbuddy", "poolalloc", "regalloc", "mimalloc", "tlsf", "none"]
     params:
   
     # Tinyalloc options:
     - name: LIBTINYALLOC_DISABLE_SPLIT
       when: "tinyalloc"
       type: string
-      only: ["n"] #, "y"] # default n
+      only: ["n", "y"] # default n
 
     - name: LIBTINYALLOC_DISABLE_COMPACT
       when: "tinyalloc"
@@ -50,7 +50,7 @@ params:
     - name: LIBTINYALLOC_SPLIT_THRESH
       when: "tinyalloc"
       type: int
-      only: [16] #, 8, 16, 24, 32] # (try 8 and more); default 16;
+      only: [16] #8, 16, 24, 32] # (try 8 and more); default 16;
   
     - name: LIBTINYALLOC_ALIGNMENT
       when: "tinyalloc"
@@ -82,11 +82,11 @@ params:
 
   - name: LWIP_TCPIP_THREAD_STACKSIZE
     type: int
-    only: [0] #, 256, 512, 1024, 2048, 4096, 8192, 16384] #in kbytes; 16k should be more then enough for stack size
+    only: [1024] #0, 256, 512, 1024, 2048, 4096, 8192, 16384] #in kbytes; 16k should be more then enough for stack size
 
   - name: LWIP_TCP_SND_BUF
     type: int
-    only: [256000] #, 524288, 1048576, 1572864, 2097152]    # in bytes; default 1048576=1GB; 1MB, 0.5GB, 1GB, 1.5GB, 2GB; these values might need to be more finetuned
+    only: [1048576] #256000, 524288, 1048576, 1572864, 2097152]    # in bytes; default 1048576=1GB; 1MB, 0.5GB, 1GB, 1.5GB, 2GB; these values might need to be more finetuned
   
   - name: LWIP_DNS_MAX_SERVERS
     type: int
@@ -104,7 +104,7 @@ params:
   # -----------------------------------
   - name: LIBUKDEBUG
     type: string
-    only: ["y"] #, "n"] # default should definitly be no! The experiments take longer with tracepoints
+    only: ["n"] #, "n"] # default should definitly be no! The experiments take longer with tracepoints
     params:
 
     - name: LIBUKDEBUG_TRACEPOINTS
@@ -183,8 +183,8 @@ outputs:
 
 runs:
   - name: build
-    image: alexpawe/ukbench-unikraft-test:test
-    cores: 78
+    image: ghcr.io/alexpawe/ukbench-unikraft-test:test
+    cores: 3
     devices:
       - /dev/urandom
     cmd:
@@ -284,12 +284,12 @@ runs:
       find -depth -print | tac | bsdcpio -o --format newc > ../initramfs.cpio
 
   - name: run
-    image: alexpawe/ukbench-unikraft-test:test
+    image: ghcr.io/alexpawe/ukbench-unikraft-test:test
     cores: 3
     devices:
       - /dev/kvm
       - /dev/net/tun
     capabilities:
       - CAP_NET_ADMIN
-    cmd: #/test.sh
+    cmd: /test.sh
 
