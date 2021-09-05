@@ -17,6 +17,8 @@ ENV KRAFTRC=/usr/src/unikraft/.kraftrc
 
 COPY --from=wrk /wrk/wrk /usr/local/bin/wrk
 COPY .kraftrc /usr/src/unikraft/.kraftrc
+COPY .gdbinit /root/.gdbinit
+COPY scripts/ /root/unikraft/support/scripts/
 
 RUN set -xe; \
     apt-get update; \
@@ -27,6 +29,7 @@ RUN set -xe; \
       bridge-utils \
       net-tools \
       bsdcpio \
+      gdb \
       bzip2; \
     kraft list update; \
     kraft list pull unikraft@staging; \
