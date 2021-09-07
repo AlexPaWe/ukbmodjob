@@ -117,7 +117,7 @@ params:
       - name: LIBUKDEBUG_TRACE_BUFFER_SIZE
         when: "y"
         type: int
-        only: [16777216]     # TODO: Replace with something more fitting!
+        only: [104857600]     # TODO: Replace with something more fitting!
 
       - name: LIBUKDEBUG_ALL_TRACEPOINTS
         when: "y"
