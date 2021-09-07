@@ -25,7 +25,7 @@ params:
 
   - name: HZ # only necessary as long as unikraft does not support dynamic timer interrupt frequency.
     type: int
-    only: [100, 250, 300, 1000]
+    only: [100] #, 250] #, 300, 1000]
 
   # Allocator options:
   # -----------------------------------
@@ -33,29 +33,30 @@ params:
   #  Chose allocator:
   - name: ALLOCATOR
     type: string
-    only: ["tinyalloc", "bbuddy", "poolalloc", "regalloc", "mimalloc", "tlsf", "none"]
+    only: ["tinyalloc", "bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"]
     params:
-  
+
     # Tinyalloc options:
     - name: LIBTINYALLOC_DISABLE_SPLIT
       when: "tinyalloc"
       type: string
       only: ["n", "y"] # default n
+      params:
+
+      - name: LIBTINYALLOC_SPLIT_THRESH
+        when: "n"
+        type: int
+        only: [8, 16, 24, 32] # (try 8 and more); default 16;
 
     - name: LIBTINYALLOC_DISABLE_COMPACT
       when: "tinyalloc"
       type: string
-      only: ["n"] #, "y"]
-
-    - name: LIBTINYALLOC_SPLIT_THRESH
-      when: "tinyalloc"
-      type: int
-      only: [16] #8, 16, 24, 32] # (try 8 and more); default 16;
+      only: ["n", "y"]
   
     - name: LIBTINYALLOC_ALIGNMENT
       when: "tinyalloc"
       type: int
-      only: [8] #, 16, 32, 64, 128] # (try 8 and more); default 8; Should be >= word size; Up to 128 byte for cache line alignment.
+      only: [8, 16, 32, 64, 128] # (try 8 and more); default 8; Should be >= word size; Up to 128 byte for cache line alignment.
    
     # Mimalloc options:
     - name: LIBMIMALLOC_MIMALLOC_DEBUG
@@ -66,7 +67,7 @@ params:
     - name: LIBMIMALLOC_ASSERT
       when: "mimalloc"
       type: string
-      only: ["y"] #, "n"]
+      only: ["n"] #, "y"]
 
     # TLSF specific options:
     - name: LIBTLSF_TLSF_LOG2_SLI
@@ -104,7 +105,7 @@ params:
   # -----------------------------------
   - name: LIBUKDEBUG
     type: string
-    only: ["n"] #, "n"] # default should definitly be no! The experiments take longer with tracepoints
+    only: ["y"] #, "n"] # default should definitly be no! The experiments take longer with tracepoints
     params:
 
     - name: LIBUKDEBUG_TRACEPOINTS
