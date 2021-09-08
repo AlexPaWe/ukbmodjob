@@ -40,17 +40,19 @@ params:
     - name: LIBTINYALLOC_DISABLE_SPLIT
       when: "tinyalloc"
       type: string
-      only: ["n"] #, "y"] # default n
+      only: ["n", "y"] # default n
+      params:
+
+      - name: LIBTINYALLOC_SPLIT_THRESH
+        when: "n"
+        type: int
+        only: [16] #8, 16, 24, 32] # (try 8 and more); default 16;
+
 
     - name: LIBTINYALLOC_DISABLE_COMPACT
       when: "tinyalloc"
       type: string
       only: ["n"] #, "y"]
-
-    - name: LIBTINYALLOC_SPLIT_THRESH
-      when: "tinyalloc"
-      type: int
-      only: [16] #8, 16, 24, 32] # (try 8 and more); default 16;
   
     - name: LIBTINYALLOC_ALIGNMENT
       when: "tinyalloc"
