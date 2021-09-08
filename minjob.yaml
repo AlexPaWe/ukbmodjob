@@ -48,7 +48,6 @@ params:
         type: int
         only: [16] #8, 16, 24, 32] # (try 8 and more); default 16;
 
-
     - name: LIBTINYALLOC_DISABLE_COMPACT
       when: "tinyalloc"
       type: string
@@ -118,7 +117,7 @@ params:
       - name: LIBUKDEBUG_TRACE_BUFFER_SIZE
         when: "y"
         type: int
-        only: [16777216]     # TODO: Replace with something more fitting!
+        only: [104857600]     # TODO: Replace with something more fitting!
 
       - name: LIBUKDEBUG_ALL_TRACEPOINTS
         when: "y"
