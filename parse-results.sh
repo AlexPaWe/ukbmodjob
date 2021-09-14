@@ -17,7 +17,9 @@ if [[ ! -d $RESULTSDIR ]]; then
   exit 1
 fi
 
-
+unset keys
+unset values
+unset tasksjson
 tasksjson=$(cat $TASKSFILE)
 for TASKID in $(cat $TASKSFILE | jq -r "keys[]"); do
   if [[ -f $RESULTSDIR/$TASKID/results.txt ]]; then
