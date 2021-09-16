@@ -9,5 +9,4 @@ echo "Parse result.txt files..."
 cp results.csv experiment_results/results.csv
 rm results.csv # to prevent additions by subsequent invocations of this script
 
-cd experiment_results
-cp -r ../results/ .
+rsync -av --progress results experiment_results/ --exclude usr/
