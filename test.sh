@@ -2,7 +2,17 @@
 
 set -xe
 
-apt-get install -y curl
+# Use a flag to turn on and of the gdb part of testing.
+RUN_GDB=0
+while getopts g: flag
+do
+  case "${flag}" in
+    g)
+      RUN_GDB=1
+  esac
+done
+
+#apt-get install -y curl # already done in my container
 
 QEMU_GUEST=${QEMU_GUEST:-$(which qemu-guest)}
 BRIDGE=ukbench$WAYFINDER_CORE_ID0 # create a unique bridge
@@ -13,6 +23,8 @@ UNIKERNEL_DBG="${UNIKERNEL_IMAGE}.dbg"
 UNIKERNEL_IP="172.${WAYFINDER_CORE_ID0}.${WAYFINDER_CORE_ID1}.2"
 NUM_PARALLEL_CONNS=${NUM_PARALLEL_CONNS:-30}
 DURATION=${DURATION:-10}
+
+ITERATIONS=10
 
 if [[ ! -f $UNIKERNEL_IMAGE ]]; then
   echo "Missing unikernel image!"
@@ -52,20 +64,25 @@ taskset -c $WAYFINDER_CORE_ID0 \
 
 # make sure that the server has properly started
 sleep 5
+  
+for (( i=1; i <= ITERATIONS; i++ )); do
+  curl -Lvk http://$UNIKERNEL_IP:80
 
-curl -Lvk http://$UNIKERNEL_IP:80
+  echo "Starting experiment..."
+  taskset -c $WAYFINDER_CORE_ID2 \
+    wrk \
+      -d $DURATION --latency \
+      -t $NUM_PARALLEL_CONNS \
+      -c $NUM_PARALLEL_CONNS http://$UNIKERNEL_IP:80/payload.txt &> /results$i.txt
 
-echo "Starting experiment..."
-taskset -c $WAYFINDER_CORE_ID2 \
-  wrk \
-    -d $DURATION --latency \
-    -t $NUM_PARALLEL_CONNS \
-    -c $NUM_PARALLEL_CONNS http://$UNIKERNEL_IP:80/payload.txt &> /results.txt
+cat /results$i.txt
+done
 
-cat /results.txt
-
-echo "Starting gdb..."
-gdb -x run-gdb $UNIKERNEL_DBG
-echo "Completed dumping traces."
+if [ $RUN_GDB == 1 ]
+then
+  echo "Starting gdb..."
+  gdb -x run-gdb $UNIKERNEL_DBG
+  echo "Completed dumping traces."
+fi
 
 echo "Done!"
