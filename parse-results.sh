@@ -7,7 +7,7 @@ fi
 
 TASKSFILE=${TASKS:-$RESULTSDIR/tasks.json}
 
-ITERATIONS=5
+ITERATIONS=10
 
 if [[ ! -f $TASKSFILE ]]; then
   echo "Missing tasks.json file!"
@@ -24,7 +24,7 @@ unset values
 unset tasksjson
 tasksjson=$(cat $TASKSFILE)
 for TASKID in $(cat $TASKSFILE | jq -r "keys[]"); do
-  for (( j=1; j < ITERATIONS; j++)); do
+  for (( j=1; j <= ITERATIONS; j++)); do
     if [[ -f $RESULTSDIR/$TASKID/results$j.txt ]]; then
       keys="$(cat $RESULTSDIR/$TASKID/results$j.txt | sed -e '6,10d' | wrkp | head -1),Iteration"
       IFS="," read -a keysarr <<< $keys
@@ -43,12 +43,13 @@ for TASKID in $(cat $TASKSFILE | jq -r "keys[]"); do
       
       NEW_TASKID="$TASKID-$j"
       tasksjson=$(echo "$tasksjson" | jq --arg NEW_TID "$NEW_TASKID" --arg j "$j" '. += {($NEW_TID): $j}' | jq --arg NEW_TID "$NEW_TASKID" --arg TID "$TASKID" '.[$NEW_TID] = .[$TID]')
-      #echo "$tasksjson"
+      echo "$tasksjson"
     fi
   done
+  # Delete original json entry for TASKID without iteration number
   tasksjson=$(echo "$tasksjson" | jq --arg TID "$TASKID" 'del(.[$TID])')
 done
 
-echo "$tasksjson"
+#echo "$tasksjson"
 
 echo "$tasksjson" | jq -r 'to_entries[] | .key as $parent | .value += {"TASKID": $parent} | .value' | jq -s -r '.' | jq -r '(map(keys) | add | unique) as $cols | map(. as $row | $cols | map($row[.])) as $rows | $cols, $rows[] | @csv' >> results.csv

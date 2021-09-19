@@ -76,6 +76,9 @@ for (( i=1; i <= ITERATIONS; i++ )); do
       -c $NUM_PARALLEL_CONNS http://$UNIKERNEL_IP:80/payload.txt &> /results$i.txt
 
 cat /results$i.txt
+
+sleep 2
+
 done
 
 if [ $RUN_GDB == 1 ]
