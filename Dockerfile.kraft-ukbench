@@ -33,7 +33,8 @@ RUN set -xe; \
       gdb \
       iptables \
       bzip2 \
-      curl; \
+      curl \
+      ccache; \
     pip3 install tabulate; \
     kraft list update; \
     kraft list pull unikraft@staging; \
@@ -48,4 +49,13 @@ RUN set -xe; \
     cd /usr/src/unikraft/apps/nginx; \
     kraft configure; \
     kraft fetch; \
+    kraft prepare; \
+    export CC="ccache gcc"; \
+    export CXX="ccache g++"; \
+    ln -s $(which ccache) /usr/local/bin/gcc; \
+    ln -s $(which ccache) /usr/local/bin/g++; \
+    ln -s $(which ccache) /usr/local/bin/cc; \
+    ln -s $(which ccache) /usr/local/bin/c++; \
+    cd /usr/src/unikraft/apps/nginx; \
+    kraft build -j --no-progress; \
     unset UK_KRAFT_GITHUB_TOKEN
