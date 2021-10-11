@@ -5,7 +5,8 @@ RUN set -xe; \
     apt-get install -y \
       build-essential \
       unzip \
-      git; \
+      git \
+      bzip2; \
     git clone https://github.com/wg/wrk.git /wrk; \
     cd /wrk; \
     make
@@ -30,7 +31,10 @@ RUN set -xe; \
       net-tools \
       bsdcpio \
       gdb \
-      bzip2; \
+      iptables \
+      bzip2 \
+      curl; \
+    pip3 install tabulate; \
     kraft list update; \
     kraft list pull unikraft@staging; \
     kraft list pull lib/tlsf@staging; \
@@ -41,4 +45,7 @@ RUN set -xe; \
     kraft list pull lib/lwip@staging; \
     kraft list pull lib/nginx@staging; \
     kraft list pull --no-deps app/nginx; \
+    cd /usr/src/unikraft/apps/nginx; \
+    kraft configure; \
+    kraft fetch; \
     unset UK_KRAFT_GITHUB_TOKEN
