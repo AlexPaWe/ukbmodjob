@@ -201,6 +201,7 @@ outputs:
   - path: /traces8.txt
   - path: /traces9.txt
   - path: /traces10.txt
+  - path: /buildtime.txt
 
 runs:
   - name: build
