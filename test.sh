@@ -89,7 +89,9 @@ for (( i=1; i <= ITERATIONS; i++ )); do
   gdb -x run-gdb -ex "func 123$i" $UNIKERNEL_DBG
   echo "Completed dumping traces."
 
-  pip3 install tabulate
+  # should already be installed in container
+  #pip3 install tabulate
+  
   export LC_ALL=C.UTF-8
   export LANG=C.UTF-8
   $UK_TRACE_SCRIPT list traces.dat > traces$i.txt
@@ -98,10 +100,10 @@ for (( i=1; i <= ITERATIONS; i++ )); do
 
   ifconfig $BRIDGE down || true
   brctl delbr $BRIDGE || true
-  pkill -f qemu-system-x86_64 #|| true
+  pkill -f qemu-system-x86_64 || true
 
   # wait untill the vm has shut down
-  #sleep 31
+  sleep 2
 
 done
 
