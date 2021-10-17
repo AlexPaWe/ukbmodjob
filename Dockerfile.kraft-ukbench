@@ -15,6 +15,7 @@ FROM unikraft/kraft:staging AS kraft
 
 ARG UK_KRAFT_GITHUB_TOKEN=
 ENV KRAFTRC=/usr/src/unikraft/.kraftrc
+ENV KRAFTCACHE=/usr/src/unikraft/.kraftcache
 
 COPY --from=wrk /wrk/wrk /usr/local/bin/wrk
 COPY .kraftrc /usr/src/unikraft/.kraftrc
@@ -36,6 +37,15 @@ RUN set -xe; \
       curl \
       ccache; \
     pip3 install tabulate; \
+    kraft list add https://github.com/AlexPaWe/unikraft.git; \
+    kraft list add https://github.com/AlexPaWe/lib-tlsf.git; \
+    kraft list add https://github.com/AlexPaWe/lib-tinyalloc.git; \
+    kraft list add https://github.com/AlexPaWe/lib-mimalloc.git; \
+    kraft list add https://github.com/AlexPaWe/lib-lwip.git; \
+    kraft list add https://github.com/unikraft/lib-pthread-embedded.git; \
+    kraft list add https://github.com/unikraft/lib-newlib.git; \
+    kraft list add https://github.com/unikraft/lib-nginx.git; \
+    kraft list add https://github.com/AlexPaWe/app-nginx.git; \
     kraft list update; \
     kraft list pull unikraft@staging; \
     kraft list pull lib/tlsf@staging; \
@@ -45,17 +55,22 @@ RUN set -xe; \
     kraft list pull lib/newlib@staging; \
     kraft list pull lib/lwip@staging; \
     kraft list pull lib/nginx@staging; \
-    kraft list pull --no-deps app/nginx; \
+    kraft list pull --no-deps app/nginx@staging; \
     cd /usr/src/unikraft/apps/nginx; \
-    kraft configure; \
-    kraft fetch; \
-    kraft prepare; \
+    kraft configure \
+      -u unikraft@staging \
+      -u mimallic@staging \
+      -u tinyalloc@staging \
+      -u tlsf@staging \
+      -u pthread-embedded@staging \
+      -u newlib@staging \
+      -u lwip@staging \
+      -u nginx@staging; \
     export CC="ccache gcc"; \
     export CXX="ccache g++"; \
     ln -s $(which ccache) /usr/local/bin/gcc; \
     ln -s $(which ccache) /usr/local/bin/g++; \
     ln -s $(which ccache) /usr/local/bin/cc; \
     ln -s $(which ccache) /usr/local/bin/c++; \
-    cd /usr/src/unikraft/apps/nginx; \
-    kraft build -j --no-progress; \
+    kraft build --no-progress --fast; \
     unset UK_KRAFT_GITHUB_TOKEN
