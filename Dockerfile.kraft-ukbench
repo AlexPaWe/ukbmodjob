@@ -57,6 +57,7 @@ RUN set -xe; \
     kraft list pull lib/nginx@staging; \
     kraft list pull --no-deps app/nginx@staging; \
     cd /usr/src/unikraft/apps/nginx; \
+    kraft list pull; \
     kraft configure \
       -u unikraft@staging \
       -u mimallic@staging \
@@ -72,5 +73,6 @@ RUN set -xe; \
     ln -s $(which ccache) /usr/local/bin/g++; \
     ln -s $(which ccache) /usr/local/bin/cc; \
     ln -s $(which ccache) /usr/local/bin/c++; \
+    kraft prepare; \
     kraft build --no-progress --fast; \
     unset UK_KRAFT_GITHUB_TOKEN
