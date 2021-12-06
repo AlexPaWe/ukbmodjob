@@ -15,6 +15,7 @@ FROM unikraft/kraft:staging AS kraft
 
 ARG UK_KRAFT_GITHUB_TOKEN=
 ENV KRAFTRC=/usr/src/unikraft/.kraftrc
+ENV KRAFTCACHE=/usr/src/unikraft/.kraftcache
 
 COPY --from=wrk /wrk/wrk /usr/local/bin/wrk
 COPY .kraftrc /usr/src/unikraft/.kraftrc
@@ -36,18 +37,16 @@ RUN set -xe; \
       curl \
       ccache; \
     pip3 install tabulate; \
-    kraft list update; \
-    kraft list pull unikraft@staging; \
-    kraft list pull lib/tlsf@staging; \
-    kraft list pull lib/tinyalloc@staging; \
-    kraft list pull lib/mimalloc@staging; \
-    kraft list pull lib/pthread-embedded@staging; \
-    kraft list pull lib/newlib@staging; \
-    kraft list pull lib/lwip@staging; \
-    kraft list pull lib/nginx@staging; \
-    kraft list pull --no-deps app/nginx@staging; \
-    cd /usr/src/unikraft/apps/nginx; \
-    kraft configure; \ 
+    cd /usr/src/unikraft/apps; \
+    git clone https://github.com/AlexPaWe/app-nginx nginx; \
+    cd ../libs; \
+    git clone https://github.com/AlexPaWe/lib-tlsf tlsf; \
+    git clone https://github.com/AlexPaWe/lib-tinyalloc tinyalloc; \
+    git clone https://github.com/AlexPaWe/lib-mimalloc mimalloc; \
+    git clone https://github.com/unikraft/lib-pthread-embedded pthread-embedded; \
+    git clone https://github.com/unikraft/lib-newlib; \
+    git clone https://github.com/AlexPaWe/lib-lwip lwip; \
+    git clone https://github.com/unikraft/lib-nginx nginx; \
     export CC="ccache gcc"; \
     export CXX="ccache g++"; \
     ln -s $(which ccache) /usr/local/bin/gcc; \
@@ -55,7 +54,8 @@ RUN set -xe; \
     ln -s $(which ccache) /usr/local/bin/cc; \
     ln -s $(which ccache) /usr/local/bin/c++; \
     cd /usr/src/unikraft/apps/nginx; \
-    kraft build --fast --no-progress; \
+    ls; \
+    kraft configure; \
+    make prepare; \
+    make -j; \
     unset UK_KRAFT_GITHUB_TOKEN
-
-
