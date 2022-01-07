@@ -33,7 +33,7 @@ params:
   #  Chose allocator:
   - name: ALLOCATOR
     type: string
-    only: ["tinyalloc"] #"bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"]
+    only: ["mimalloc"] #"bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf", "none"]
     params:
   
     # Tinyalloc options:
@@ -119,7 +119,7 @@ params:
       - name: LIBUKDEBUG_TRACE_BUFFER_SIZE
         when: "y"
         type: int
-        only: [16777216]     # TODO: Replace with something more fitting!
+        only: [16384]     # TODO: Replace with something more fitting!
 
       - name: LIBUKDEBUG_ALL_TRACEPOINTS
         when: "y"
@@ -181,6 +181,8 @@ outputs:
   - path: /usr/src/unikraft/apps/nginx/build/nginx_kvm-x86_64
   - path: /usr/src/unikraft/apps/nginx/build/nginx_kvm-x86_64.dbg
   - path: /usr/src/unikraft/apps/nginx/initramfs.cpio
+  - path: /usr/src/unikraft/apps/nginx/buildtime.txt
+  - path: /buildtime.txt
   - path: /results1.txt
   - path: /results2.txt
   - path: /results3.txt
@@ -191,12 +193,21 @@ outputs:
   - path: /results8.txt
   - path: /results9.txt
   - path: /results10.txt
-  - path: /traces.dat
+  - path: /traces1.txt
+  - path: /traces2.txt
+  - path: /traces3.txt
+  - path: /traces4.txt
+  - path: /traces5.txt
+  - path: /traces6.txt
+  - path: /traces7.txt
+  - path: /traces8.txt
+  - path: /traces9.txt
+  - path: /traces10.txt
 
 runs:
   - name: build
-    image: ghcr.io/alexpawe/ukbench-unikraft-test:trial
-    cores: 10
+    image: ukbench/unikraft
+    cores: 4
     devices:
       - /dev/urandom
     cmd:
@@ -275,10 +286,18 @@ runs:
         --yes LIBUKCPIO \
         --yes LIBRAMFS \
         --no  LIB9PFS \
-        --no  LIBUK9P
+        --no  LIBUK9P \
+        --yes LIBSYSCALL_SHIM \
+        --yes LIBSYSCALL_SHIM_LIBCSTUBS \
+        --yes LIBUKSWRAND \
 
-      #kraft -v prepare
-      kraft build -j --no-progress
+      kraft -v prepare
+      { time kraft build 2> build.stderr ; } 2> buildtime.txt
+      #make -j
+      
+      # move buildtime.txt to home folder
+      #mv buildtime.txt ~/buildtime.txt
+        
       cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
       if [[ $ACCESS_LOG == "y" ]]; then \
         export ACCESS_LOG="\/dev\/stdout"; \
@@ -296,8 +315,8 @@ runs:
       find -depth -print | tac | bsdcpio -o --format newc > ../initramfs.cpio
 
   - name: run
-    image: ghcr.io/alexpawe/ukbench-unikraft-test:trial
-    cores: 10
+    image: ukbench/unikraft
+    cores: 3
     devices:
       - /dev/kvm
       - /dev/net/tun

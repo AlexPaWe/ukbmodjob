@@ -2,11 +2,11 @@ params:
   # Unikraft-specific
   - name: LWIP_NUM_TCPCON
     type: int
-    only: [8] #, 16, 32, 64]
+    only: [8] #, 16, 32, 64] # default 8;
 
   - name: LWIP_NUM_TCPLISTENERS
     type: int
-    only: [8] #, 16, 32, 64]
+    only: [8] #, 16, 32, 64] # default 8;
   
   - name: LWIP_UKNETDEV_POLLONLY
     type: string
@@ -14,7 +14,7 @@ params:
   
   - name: LWIP_POOLS
     type: string
-    only: ["y"] #, "n"]
+    only: ["y"] #, "n"] # default y;
 
   # -----------------------------------
   # Added by me:
@@ -25,7 +25,7 @@ params:
 
   - name: HZ # only necessary as long as unikraft does not support dynamic timer interrupt frequency.
     type: int
-    only: [100, 250, 300, 1000]
+    only: [100] #, 250, 300, 1000]
 
   # Allocator options:
   # -----------------------------------
@@ -33,24 +33,25 @@ params:
   #  Chose allocator:
   - name: ALLOCATOR
     type: string
-    only: ["tinyalloc", "bbuddy", "poolalloc", "regalloc", "mimalloc", "tlsf", "none"]
+    only: ["bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf"] #, "none"]
     params:
   
     # Tinyalloc options:
     - name: LIBTINYALLOC_DISABLE_SPLIT
       when: "tinyalloc"
       type: string
-      only: ["n", "y"] # default n
+      only: ["n"] #, "y"] # default n
+      params:
+      
+        - name: LIBTINYALLOC_SPLIT_THRESH
+          when: "n"
+          type: int
+          only: [16] #8, 16, 24, 32] # (try 8 and more); default 16;
 
     - name: LIBTINYALLOC_DISABLE_COMPACT
       when: "tinyalloc"
       type: string
       only: ["n"] #, "y"]
-
-    - name: LIBTINYALLOC_SPLIT_THRESH
-      when: "tinyalloc"
-      type: int
-      only: [16] #8, 16, 24, 32] # (try 8 and more); default 16;
   
     - name: LIBTINYALLOC_ALIGNMENT
       when: "tinyalloc"
@@ -66,23 +67,23 @@ params:
     - name: LIBMIMALLOC_ASSERT
       when: "mimalloc"
       type: string
-      only: ["y"] #, "n"]
+      only: ["n"] #"y", "n"]
 
     # TLSF specific options:
     - name: LIBTLSF_TLSF_LOG2_SLI
       when: "tlsf"
       type: int
-      only: [4] #, 5, 6, 7] # do not try more then 7
+      only: [0] #, 1, 2, 3, 4, 5, 6, 7] # do not try more then 7
 
   # LWIP options:
   #------------------------------------
   - name: LWIP_TCP_QUEUE_OOSEQ
     type: string
-    only: ["y"] #, "n"]
+    only: ["y"] #, "n"] # default y
 
   - name: LWIP_TCPIP_THREAD_STACKSIZE
     type: int
-    only: [1024] #0, 256, 512, 1024, 2048, 4096, 8192, 16384] #in kbytes; 16k should be more then enough for stack size
+    only: [1024] #0, 256, 512, 1024, 2048, 4096, 8192, 16384] #in kbytes; default 1024; 16k should be more then enough for stack size
 
   - name: LWIP_TCP_SND_BUF
     type: int
@@ -95,16 +96,18 @@ params:
   - name: LWIP_DNS_LOCAL_HOST_LIST
     type: string
     only: ["y"] #, "n"] # default y
+    params:
 
-  - name: LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC # should only be available if LWIP_DNS_LOCAL_HOST_LIST is set to true.
-    type: string
-    only: ["y"] #, "n"]
+    - name: LWIP_DNS_LOCAL_HOSTLIST_IS_DYNAMIC # should only be available if LWIP_DNS_LOCAL_HOST_LIST is set to true.
+      when: "y"
+      type: string
+      only: ["y"] #, "n"] # default y;
 
   # Tracepoint options:
   # -----------------------------------
   - name: LIBUKDEBUG
     type: string
-    only: ["n"] #, "n"] # default should definitly be no! The experiments take longer with tracepoints
+    only: ["y"] #, "n"] # default should definitly be no! The experiments take longer with tracepoints
     params:
 
     - name: LIBUKDEBUG_TRACEPOINTS
@@ -116,7 +119,7 @@ params:
       - name: LIBUKDEBUG_TRACE_BUFFER_SIZE
         when: "y"
         type: int
-        only: [16777216]     # TODO: Replace with something more fitting!
+        only: [16384]     # TODO: Replace with something more fitting!
 
       - name: LIBUKDEBUG_ALL_TRACEPOINTS
         when: "y"
@@ -137,28 +140,28 @@ params:
   # Nginx-specific
   - name: ACCESS_LOG
     type: string
-    only: ["y"] #, "n"]
+    only: ["n"] #, "y"] # default should be n
 
   - name: KEEPALIVE_TIMEOUT
     type: int
-    only: [0] #, 30, 60, 300]
+    only: [30] #0, 30, 60, 300] # default 30;
 
   - name: OPEN_FILE_CACHE
     type: string
-    only: ["caching"] #, "nocaching"]
+    only: ["caching"] #, "nocaching"] # default caching
 
   # Client-specific
   - name: WORKER_CONNECTIONS
     type: int
-    only: [63]
+    only: [63] #1, 2, 4 , 16, 63, 128] # default was 63;
 
   - name: PAYLOAD_SIZE
     type: int
-    only: [612] # bytes
+    only: [612] #, 1024, 1048576, 1073741824] # bytes, default was 612;
   
   - name: NUM_PARALLEL_CONNS
     type: int
-    only: [5] #, 10, 30, 64]
+    only: [5] #, 10, 30, 64] # default 5;
 
 inputs:
   - source: /etc/resolv.conf
@@ -178,13 +181,32 @@ outputs:
   - path: /usr/src/unikraft/apps/nginx/build/nginx_kvm-x86_64
   - path: /usr/src/unikraft/apps/nginx/build/nginx_kvm-x86_64.dbg
   - path: /usr/src/unikraft/apps/nginx/initramfs.cpio
-  - path: /results.txt
-  - path: /traces.dat
+  - path: /usr/src/unikraft/apps/nginx/buildtime.txt
+  - path: /results1.txt
+  - path: /results2.txt
+  - path: /results3.txt
+  - path: /results4.txt
+  - path: /results5.txt
+  - path: /results6.txt
+  - path: /results7.txt
+  - path: /results8.txt
+  - path: /results9.txt
+  - path: /results10.txt
+  - path: /traces1.txt
+  - path: /traces2.txt
+  - path: /traces3.txt
+  - path: /traces4.txt
+  - path: /traces5.txt
+  - path: /traces6.txt
+  - path: /traces7.txt
+  - path: /traces8.txt
+  - path: /traces9.txt
+  - path: /traces10.txt
 
 runs:
   - name: build
-    image: ghcr.io/alexpawe/ukbench-unikraft-test:test
-    cores: 3
+    image: ghcr.io/alexpawe/ukbench-unikraft-test:final
+    cores: 4
     devices:
       - /dev/urandom
     cmd:
@@ -263,10 +285,15 @@ runs:
         --yes LIBUKCPIO \
         --yes LIBRAMFS \
         --no  LIB9PFS \
-        --no  LIBUK9P
+        --no  LIBUK9P \
+        --yes LIBSYSCALL_SHIM \
+        --yes LIBSYSCALL_SHIM_LIBCSTUBS \
+        --yes LIBUKSWRAND \
 
       kraft -v prepare
-      kraft -v build --no-progress
+      { time make -j 2> build.stderr ; } 2> buildtime.txt      # use nCores x 1.5 for make
+      #make -j
+        
       cat /nginx-$OPEN_FILE_CACHE.conf | sed "s/\$WORKER_CONNECTIONS/${WORKER_CONNECTIONS}/g" > ./fs0/nginx/conf/nginx.conf
       if [[ $ACCESS_LOG == "y" ]]; then \
         export ACCESS_LOG="\/dev\/stdout"; \
@@ -284,12 +311,11 @@ runs:
       find -depth -print | tac | bsdcpio -o --format newc > ../initramfs.cpio
 
   - name: run
-    image: ghcr.io/alexpawe/ukbench-unikraft-test:test
-    cores: 3
+    image: ghcr.io/alexpawe/ukbench-unikraft-test:final
+    cores: 2
     devices:
       - /dev/kvm
       - /dev/net/tun
     capabilities:
       - CAP_NET_ADMIN
     cmd: /test.sh
-
