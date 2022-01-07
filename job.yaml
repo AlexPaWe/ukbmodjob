@@ -35,28 +35,28 @@ params:
     type: string
     only: ["bbuddy", "poolalloc", "regalloc", "tinyalloc", "mimalloc", "tlsf"] #, "none"]
     params:
-  
+
     # Tinyalloc options:
     - name: LIBTINYALLOC_DISABLE_SPLIT
       when: "tinyalloc"
       type: string
-      only: ["n"] #, "y"] # default n
+      only: ["n", "y"] # default n
       params:
-      
-        - name: LIBTINYALLOC_SPLIT_THRESH
-          when: "n"
-          type: int
-          only: [16] #8, 16, 24, 32] # (try 8 and more); default 16;
+
+      - name: LIBTINYALLOC_SPLIT_THRESH
+        when: "n"
+        type: int
+        only: [8, 16, 24, 32] # (try 8 and more); default 16;
 
     - name: LIBTINYALLOC_DISABLE_COMPACT
       when: "tinyalloc"
       type: string
-      only: ["n"] #, "y"]
+      only: ["n", "y"]
   
     - name: LIBTINYALLOC_ALIGNMENT
       when: "tinyalloc"
       type: int
-      only: [8] #, 16, 32, 64, 128] # (try 8 and more); default 8; Should be >= word size; Up to 128 byte for cache line alignment.
+      only: [8, 16, 32, 64, 128] # (try 8 and more); default 8; Should be >= word size; Up to 128 byte for cache line alignment.
    
     # Mimalloc options:
     - name: LIBMIMALLOC_MIMALLOC_DEBUG
@@ -67,7 +67,7 @@ params:
     - name: LIBMIMALLOC_ASSERT
       when: "mimalloc"
       type: string
-      only: ["n"] #"y", "n"]
+      only: ["n"] #, "y"]
 
     # TLSF specific options:
     - name: LIBTLSF_TLSF_LOG2_SLI
@@ -119,7 +119,7 @@ params:
       - name: LIBUKDEBUG_TRACE_BUFFER_SIZE
         when: "y"
         type: int
-        only: [16384]     # TODO: Replace with something more fitting!
+        only: [104857600]     # TODO: Replace with something more fitting!
 
       - name: LIBUKDEBUG_ALL_TRACEPOINTS
         when: "y"
